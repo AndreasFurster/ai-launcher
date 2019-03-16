@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.andreasfurster.ailauncher.managers.LauncherManager;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class LauncherActivity extends Activity implements LauncherManager.View {
@@ -56,8 +58,6 @@ public class LauncherActivity extends Activity implements LauncherManager.View {
         _listView.setAdapter(new AppListAdapter());
     }
 
-
-
     class AppListAdapter extends BaseAdapter {
 
         @Override
@@ -77,6 +77,7 @@ public class LauncherActivity extends Activity implements LauncherManager.View {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            // TODO: https://developer.android.com/guide/topics/ui/layout/recyclerview
             ResolveInfo info = (ResolveInfo) getItem(position);
 
             View view = getLayoutInflater().inflate(R.layout.fragment_appinfo, null);
