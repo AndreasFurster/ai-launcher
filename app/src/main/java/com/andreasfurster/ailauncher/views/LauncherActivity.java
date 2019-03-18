@@ -1,32 +1,26 @@
-package com.andreasfurster.ailauncher;
+package com.andreasfurster.ailauncher.views;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andreasfurster.ailauncher.managers.LauncherManager;
+import com.andreasfurster.ailauncher.R;
+import com.andreasfurster.ailauncher.presenters.LauncherPresenter;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-public class LauncherActivity extends Activity implements LauncherManager.View {
+public class LauncherActivity extends Activity implements LauncherPresenter.View {
 
-    private LauncherManager<LauncherActivity> _manager;
+    private LauncherPresenter<LauncherActivity> _manager;
     private List<ResolveInfo> _appsInfo;
     private PackageManager _packageManager;
     private ListView _listView;
@@ -36,7 +30,7 @@ public class LauncherActivity extends Activity implements LauncherManager.View {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-        _manager = new LauncherManager<>(this);
+        _manager = new LauncherPresenter<>(this);
         _packageManager = getPackageManager();
         _listView = findViewById(R.id.AppsListView);
 
@@ -58,8 +52,8 @@ public class LauncherActivity extends Activity implements LauncherManager.View {
         _listView.setAdapter(new AppListAdapter());
     }
 
+    // TODO: https://developer.android.com/guide/topics/ui/layout/recyclerview
     class AppListAdapter extends BaseAdapter {
-
         @Override
         public int getCount() {
             return _appsInfo.size();
@@ -77,7 +71,6 @@ public class LauncherActivity extends Activity implements LauncherManager.View {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO: https://developer.android.com/guide/topics/ui/layout/recyclerview
             ResolveInfo info = (ResolveInfo) getItem(position);
 
             View view = getLayoutInflater().inflate(R.layout.fragment_appinfo, null);

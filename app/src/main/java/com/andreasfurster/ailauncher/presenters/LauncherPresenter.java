@@ -1,4 +1,4 @@
-package com.andreasfurster.ailauncher.managers;
+package com.andreasfurster.ailauncher.presenters;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,21 +9,24 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class LauncherManager<T extends Activity & LauncherManager.View> {
+public class LauncherPresenter<T extends Activity & LauncherPresenter.View> {
     private final T _view;
     private final PackageManager _packageManager;
 
-    public LauncherManager(T view) {
+    public LauncherPresenter(T view) {
         _view = view;
         _packageManager = view.getPackageManager();
     }
 
+    // TODO: Use viewmodel
+    // TODO: Caching?
     public void LoadApps() {
+        // Get all launch intents
         Intent filterIntent = new Intent(Intent.ACTION_MAIN, null);
         filterIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
         List<ResolveInfo> availableIntents = _packageManager.queryIntentActivities(filterIntent, 0);
 
+        // Sort intents
         if (availableIntents.size() > 0) {
             Collections.sort(availableIntents, new Comparator<ResolveInfo>() {
                 @Override
