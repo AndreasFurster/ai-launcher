@@ -2,17 +2,13 @@ package com.andreasfurster.ailauncher.views;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,11 +17,10 @@ import com.andreasfurster.ailauncher.models.App;
 import com.andreasfurster.ailauncher.presenters.LauncherPresenter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class LauncherActivity extends Activity implements LauncherPresenter.View {
 
-    private LauncherPresenter<LauncherActivity> _manager;
+    private LauncherPresenter<LauncherActivity> _presenter;
     private ArrayList<App> _appsInfo;
     private PackageManager _packageManager;
 
@@ -38,7 +33,7 @@ public class LauncherActivity extends Activity implements LauncherPresenter.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
 
-        _manager = new LauncherPresenter<>(this);
+        _presenter = new LauncherPresenter<>(this);
         _packageManager = getPackageManager();
 
         // Get recyclerView
@@ -52,7 +47,7 @@ public class LauncherActivity extends Activity implements LauncherPresenter.View
         _layoutManager = new LinearLayoutManager(this);
         _recyclerView.setLayoutManager(_layoutManager);
 
-        _manager.LoadApps();
+        _presenter.LoadApps();
     }
 
     @Override
@@ -76,6 +71,15 @@ public class LauncherActivity extends Activity implements LauncherPresenter.View
             }
         }
 
+        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int itemPosition = _recyclerView.getChildLayoutPosition(v);
+                App item = _data.get(itemPosition);
+                _presenter.StartActivity(item);
+            }
+        };
+
         private ArrayList<App> _data;
 
         AppListAdapter(ArrayList<App> data){
@@ -86,7 +90,7 @@ public class LauncherActivity extends Activity implements LauncherPresenter.View
         @Override
         public AppListAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_appinfo, parent, false);
-
+            view.setOnClickListener(mOnClickListener);
             return new AppListAdapterViewHolder(view);
         }
 

@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.util.Log;
 
+import com.andreasfurster.ailauncher.data.AppDatabase;
+import com.andreasfurster.ailauncher.data.EventDbo;
 import com.andreasfurster.ailauncher.models.App;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class LauncherPresenter<T extends Activity & LauncherPresenter.View> {
@@ -21,9 +25,11 @@ public class LauncherPresenter<T extends Activity & LauncherPresenter.View> {
         _packageManager = view.getPackageManager();
     }
 
-    // TODO: Use viewmodel
     // TODO: Caching?
     public void LoadApps() {
+        // Get previous events
+        List<EventDbo> events = AppDatabase.getAppDatabase(_view).eventDao().selectTop(100);
+
         // Get all launch intents
         Intent filterIntent = new Intent(Intent.ACTION_MAIN, null);
         filterIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -54,9 +60,15 @@ public class LauncherPresenter<T extends Activity & LauncherPresenter.View> {
         _view.ShowApps(apps);
     }
 
-    public void StartActivity(ResolveInfo item) {
+    public void StartActivity(App app) {
+        EventDbo event = new EventDbo();
+        event.setDate(new Date());
+        event.setPackageName(app.getApplicationInfoPackageName());
+
+        AppDatabase.getAppDatabase(_view).eventDao().insert(event);
+
         Intent intent = new Intent();
-        intent.setClassName(item.activityInfo.applicationInfo.packageName, item.activityInfo.name);
+        intent.setClassName(app.getApplicationInfoPackageName(), app.getActivityInfoName());
 
         _view.startActivity(intent);
     }
